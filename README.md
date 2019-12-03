@@ -1,4 +1,4 @@
-# ably-ali-dashboard
+# ably-cli-dashboard
 
 **Steps**
 
