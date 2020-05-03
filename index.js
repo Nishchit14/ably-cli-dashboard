@@ -2,12 +2,21 @@ const blessed = require('blessed')
 const contrib = require('blessed-contrib')
 const screen = blessed.screen()
 
+const CONSTANTS = {
+  CHANNEL_NAME: "express-server-info",
+  EVENT_BATTERY_STATUS: "ON_BATTERY_STATUS",
+  EVENT_CPU_TEMP: "ON_CPU_TEMP",
+  EVENT_CPU_MEM: "ON_CPU_MEM",
+  EVENT_NETWORK_STATS: "ON_NETWORK_STATS",
+  EVENT_DISK_IO_STATS: "ON_DISK_IO_STATS"
+}
 
-let ably = new require('ably').Realtime('44rb_A.hLHdbw:HuDlU-4Z22ESceAd');
-let channelTooling = ably.channels.get('Tooling');
+
+let ably = new require('ably').Realtime(process.env.ABLY_KEY);
+let channelServerInfo = ably.channels.get(CONSTANTS.CHANNEL_NAME);
 
 let batteryTimeStamp = [], batteryTiming= []
-channelTooling.subscribe('onBatteryStats', (message) => {
+channelServerInfo.subscribe(CONSTANTS.EVENT_BATTERY_STATUS, (message) => {
 	updateBatteryDonut(message.data.percent, message.data.timeremaining);
 
 	batteryTimeStamp.push(new Date().toLocaleTimeString());
@@ -30,7 +39,7 @@ let writeIOLine= {
   x: [],
   y: []
 };
-channelTooling.subscribe('onDiskIOStats', (message) => {
+channelServerInfo.subscribe(CONSTANTS.EVENT_DISK_IO_STATS, (message) => {
 	// console.log(message.data, "onDiskIOStats");
 	readIOLine.x.push(new Date().toLocaleTimeString());
 	readIOLine.y.push(message.data.rIO);
